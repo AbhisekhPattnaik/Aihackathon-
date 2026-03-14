@@ -1,80 +1,202 @@
-# Jet Engine Predictive Maintenance
+# ✈️ Jet Engine Predictive Maintenance Dashboard
 
-## Overview
-This project focuses on **predictive maintenance of jet engines** using machine learning. The goal is to **monitor engine health**, predict potential failures, and reduce unexpected downtime by providing actionable insights for maintenance planning.
+A machine learning-powered predictive maintenance system that monitors jet engine health and predicts remaining useful life (RUL) to enable preventive maintenance decisions.
 
-The system analyzes sensor data from engines, processes it, and predicts the **Remaining Useful Life (RUL)** of critical components, helping improve safety, reduce costs, and optimize operational efficiency.
+## 📋 Overview
 
----
+This project uses **Real-time sensor data** from jet engines to build a predictive model that forecasts when an engine is likely to fail. By predicting failures before they occur, maintenance teams can schedule repairs proactively, reducing downtime and operational costs.
 
-## Features
-- **Predictive Modeling:** Machine learning models forecast engine health and potential failures.  
-- **Data Preprocessing:** Handles sensor data scaling, cleaning, and feature engineering.  
-- **Visualization:** Generates intuitive plots to track engine health over time.  
-- **Streamlit Dashboard:** Interactive dashboard to visualize predictions in real-time.  
-- **Alerts & Notifications:** Highlights engines requiring immediate attention.  
+## 🎯 Key Features
 
----
+- **RUL Prediction**: Predicts Remaining Useful Life in cycles for any jet engine
+- **Health Monitoring**: Real-time engine health percentage (0-100%)
+- **Status Alerts**: Three-tier status system (Healthy → Warning → Critical)
+- **Interactive Dashboard**: Built with Streamlit for easy visualization
+- **Sensor Analytics**: Visualize degradation patterns of critical sensors
+- **Feature Importance**: Understand which sensors matter most for RUL prediction
+- **Multi-Engine Support**: Monitor and compare multiple engines from a dataset
 
-## Dataset
-The project uses engine sensor data, containing features like:
+## 🛠️ Technologies Used
 
-- Sensor readings (temperature, pressure, vibration, etc.)  
-- Operating conditions  
-- Remaining Useful Life (RUL) labels  
+- **Python 3.x**
+- **Streamlit**: Interactive web dashboard
+- **Scikit-learn**: Machine learning (Random Forest Regressor)
+- **Pandas**: Data processing and manipulation
+- **NumPy**: Numerical computing
+- **Plotly**: Interactive data visualizations
+- **Joblib**: Model serialization
 
-**Publicly available dataset for practice:**  
-- [NASA C-MAPSS Dataset](https://ti.arc.nasa.gov/tech/dash/pcoe/prognostic-data-repository/)
+## 📦 Installation
 
----
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package manager)
 
-## Installation
+### Setup Instructions
 
-1. **Clone the repository**
+1. **Clone or navigate to the project directory**:
+   ```bash
+   cd "c:\Users\nitro\Desktop\iitkgp aihack"
+   ```
+
+2. **Create a virtual environment** (recommended):
+   ```bash
+   python -m venv .venv
+   ```
+
+3. **Activate the virtual environment**:
+   - **Windows (PowerShell)**:
+     ```bash
+     .\.venv\Scripts\Activate.ps1
+     ```
+   - **Windows (CMD)**:
+     ```bash
+     .venv\Scripts\activate.bat
+     ```
+   - **macOS/Linux**:
+     ```bash
+     source .venv/bin/activate
+     ```
+
+4. **Install dependencies**:
+   ```bash
+   pip install -r requirement.txt
+   ```
+
+## 🚀 Usage
+
+### Running the Dashboard
+
 ```bash
-git clone https://github.com/your-username/jet-engine-predictive-maintenance.git
-cd jet-engine-predictive-maintenance
-Create and activate a virtual environment
-
-python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS/Linux
-source venv/bin/activate
+streamlit run ini.py
 ```
-2.Install dependencies
 
+The dashboard will open in your default browser at `http://localhost:8501`.
+
+### Using the Dashboard
+
+1. **Select an Engine**: Choose an engine ID from the dropdown to monitor its data
+2. **View Sensor Trends**: Select individual sensors to see their degradation over operational cycles
+3. **Check Health Status**: 
+   - **Healthy** (> 70% health): Engine operating normally
+   - **Warning** (40-70% health): Schedule maintenance soon
+   - **Critical** (< 40% health): Immediate maintenance required
+4. **Analyze Key Sensors**: View degradation patterns for critical sensors (2, 4, 7)
+5. **Explore Model Insights**: Check feature importance to understand which sensors influence RUL predictions
+
+## 📊 Dataset
+
+**File**: `train_FD001.txt`
+
+The dataset contains operational data from jet engines with:
+- **Engine ID**: Unique identifier for each engine
+- **Cycle**: Operational cycle number
+- **Operating Settings**: 3 operational parameters (settings 1-3)
+- **Sensor Readings**: 21 different sensor measurements
+- **Target Variable**: Remaining Useful Life (RUL) calculated from the data
+
+The RUL is computed as the difference between the maximum cycle for each engine and its current cycle, capped at 125 cycles for model stability.
+
+## 🤖 Machine Learning Model
+
+### Model Architecture
+- **Algorithm**: Random Forest Regressor
+- **Number of Trees**: 200
+- **Max Depth**: 15
+- **Min Samples per Leaf**: 5
+- **Features**: Selected sensor readings (filtered to remove near-constant sensors)
+
+### Model Training
+The model is trained on sensor readings to predict RUL. The training process includes:
+1. Data loading and feature engineering
+2. Feature scaling using MinMaxScaler (0-1 normalization)
+3. Train-test split (80-20 split)
+4. Model fitting and evaluation
+5. Model and scaler persistence (saved to `.pkl` files)
+
+### Model Files
+- `rul_model.pkl`: Trained Random Forest model
+- `scaler.pkl`: MinMaxScaler for feature normalization
+
+## 📁 Project Structure
+
+```
+iitkgp aihack/
+├── ini.py                    # Main Streamlit application
+├── requirement.txt           # Python dependencies
+├── train_FD001.txt          # Dataset (jet engine sensor data)
+├── rul_model.pkl            # Trained ML model (auto-generated)
+├── scaler.pkl               # Feature scaler (auto-generated)
+└── README.md                # This file
+```
+
+## 🔍 How It Works
+
+1. **Data Loading**: The system loads the training dataset and computes RUL for each engine record
+2. **Model Training**: On first run, a Random Forest model is trained and saved to disk (subsequent runs load the pre-trained model)
+3. **Engine Selection**: User selects an engine to monitor
+4. **Prediction**: The latest sensor readings are scaled and fed to the model to predict RUL
+5. **Health Calculation**: Health percentage is derived from RUL (`health = (RUL / 125) * 100`)
+6. **Visualization**: Multiple interactive charts show sensor trends, health degradation, and feature importance
+
+## 📈 Predicted Outputs
+
+- **Predicted RUL**: Remaining useful life in operational cycles
+- **Health Percentage**: Current engine health (0-100%)
+- **Engine Status**: Categorical status (Healthy/Warning/Critical)
+- **Sensor Trends**: Historical and degradation patterns
+- **Feature Importance**: Top 15 sensors influencing RUL predictions
+
+## ⚙️ Configuration
+
+Key parameters can be adjusted in `ini.py`:
+- `MAX_RUL = 125`: Maximum RUL value for health calculation
+- `RandomForestRegressor` parameters: Adjust model complexity and performance
+- Sensor selection: Modify `important_sensors` list for different analysis
+
+## 🐛 Troubleshooting
+
+### Model Not Loading
+If you see "Model or scaler not found" on first run, the system will automatically train a new model. This may take a few moments.
+
+### Missing Dependencies
+Ensure all requirements are installed:
 ```bash
-pip install -r requirements.txt
-#How to Run
-Run the Streamlit dashboard
-
-python streamlit run ini.py
+pip install --upgrade -r requirement.txt
 ```
-Predict Engine Health
 
-Upload engine sensor data via the dashboard
+### Port Already in Use
+If port 8501 is already in use, run:
+```bash
+streamlit run ini.py --server.port 8502
+```
 
-View RUL predictions and visualizations
+## 📝 Notes
 
-Project Structure
-jet-engine-predictive-maintenance/
-│
-├─ ini.py                # Streamlit dashboard
-├─ ini.cpython-313.py    
-├─ train_model.py        #dataset
-├─train_FD001.txt 
-├─ scaler.pkl               # Saved ML models (e.g., .pkl files)
-├─ rul_model.pkl                 # Sample datasets
-├─ requirements.txt      # Python dependencie
-Technologies Used
-Python
+- The model uses only sensor data (not operational settings) for RUL prediction
+- The system filters out near-constant sensors (std < 0.01) to improve model performance
+- RUL is capped at 125 cycles to prevent extreme outliers during training
+- The dashboard updates dynamically based on the selected engine and sensor configuration
 
-Pandas & NumPy (Data processing)
+## 🎓 Use Case
 
-Matplotlib & Seaborn (Visualization)
+This system demonstrates **predictive maintenance in aviation**, where:
+- **Cost Savings**: Prevent unscheduled downtime and costly emergency repairs
+- **Safety**: Detect potential failures before they become critical
+- **Efficiency**: Optimize maintenance scheduling and resource allocation
+- **Reliability**: Improve overall fleet reliability and availability
 
-Streamlit (Dashboard)
+## 📄 License
+
+This project was created for the IIT KGP AI Hackathon.
+
+## 👤 Contact & Support
+
+For questions or issues, please review the code comments in `ini.py` or modify the configuration parameters as needed.
+
+---
+
+**Happy Monitoring! Keep those engines running smoothly!** ✈️
 
 #working video
 link:https://docs.google.com/videos/d/1DOoFNQDBcr0OijoE0cUCP-Bs9xl2KSYA7puTXH2Avyw/edit?usp=sharing
